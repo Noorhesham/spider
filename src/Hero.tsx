@@ -112,7 +112,6 @@ const FluidCursorTrail: React.FC = () => {
     const prevMouse = new THREE.Vector2(0.5, 0.5);
     let isMoving = false;
     let lastMoveTime = 0;
-    let isInsideCanvas = false;
 
     // Simulation setup
     const simSize = 512;
@@ -180,9 +179,10 @@ const FluidCursorTrail: React.FC = () => {
       const loader = new THREE.TextureLoader();
       loader.load(
         url,
-        (texture) => {
+        (texture: THREE.Texture) => {
           const img = texture.image;
-          const width = img.width;
+          //@ts-ignore
+          const width = img.width; //@ts-ignore
           const height = img.height;
 
           console.log(`Loaded ${isTop ? "top" : "bottom"} image: ${width}x${height}`);
@@ -202,19 +202,19 @@ const FluidCursorTrail: React.FC = () => {
 
           // Update material uniform
           if (isTop) {
-            displayMaterial.uniforms.uTopTexture.value = texture;
+            displayMaterial.uniforms.uTopTexture.value = texture; //@ts-ignore
             topTexture = texture;
           } else {
-            displayMaterial.uniforms.uBottomTexture.value = texture;
+            displayMaterial.uniforms.uBottomTexture.value = texture; //@ts-ignore
             bottomTexture = texture;
           }
 
           displayMaterial.needsUpdate = true;
         },
         undefined,
-        (error) => {
+        (error: any) => {
           console.error(`Error loading ${isTop ? "top" : "bottom"} image:`, error);
-        }
+        },
       );
     };
 
@@ -249,14 +249,12 @@ const FluidCursorTrail: React.FC = () => {
       const y = e.clientY;
 
       if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-        isInsideCanvas = true;
         prevMouse.copy(mouse);
         mouse.x = (x - rect.left) / rect.width;
         mouse.y = 1 - (y - rect.top) / rect.height;
         isMoving = true;
         lastMoveTime = Date.now();
       } else {
-        isInsideCanvas = false;
         isMoving = false;
       }
     };
@@ -270,14 +268,12 @@ const FluidCursorTrail: React.FC = () => {
       const y = touch.clientY;
 
       if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-        isInsideCanvas = true;
         prevMouse.copy(mouse);
         mouse.x = (x - rect.left) / rect.width;
         mouse.y = 1 - (y - rect.top) / rect.height;
         isMoving = true;
         lastMoveTime = Date.now();
       } else {
-        isInsideCanvas = false;
         isMoving = false;
       }
     };
